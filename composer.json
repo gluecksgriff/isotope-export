@@ -1,5 +1,6 @@
 {
     "name":"inszenium/isotope-export",
+    "version": "2.0.5",
     "description":"Collection Export for Isotope eCommerce, an eCommerce extension for Contao Open Source CMS",
     "keywords":["contao", "isotope", "collection", "export"],
     "type":"contao-module",
