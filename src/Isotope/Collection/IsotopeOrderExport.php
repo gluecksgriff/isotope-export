@@ -112,13 +112,20 @@ class IsotopeOrderExport extends \Backend
     }
 
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
-    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'items', 'grandTotal');
+    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'items', 'grandTotal','payment');
      
     foreach ($arrKeys as $v) {
       $this->arrHeaderFields[$v] = $csvHead[$v];
     }
    
-    $objOrders = \Database::getInstance()->query("SELECT *, tl_iso_product_collection.id as collection_id FROM tl_iso_product_collection, tl_iso_address WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( document_number != '' OR document_number IS NOT NULL) ORDER BY document_number ASC");
+    $objOrders = \Database::getInstance()->query(
+	    "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
+FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
+WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id 
+AND tl_iso_product_collection.payment_id = tl_iso_payment.id
+AND ( document_number != '' OR document_number IS NOT NULL) 
+ORDER BY document_number ASC"
+    );
 
     if (null === $objOrders) {
        return '<div id="tl_buttons">
@@ -163,6 +170,7 @@ class IsotopeOrderExport extends \Backend
         'subTotal'      => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->subTotal))),
         'taxTotal'      => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->tax_free_subtotal))),
         'grandTotal'    => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->total))),
+	'payment'        => $objOrders->payment
       );         
     }
     
@@ -182,13 +190,17 @@ class IsotopeOrderExport extends \Backend
     }
 
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
-    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'count', 'item_sku', 'item_name', 'item_configuration', 'item_price', 'sum');
+    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'count', 'item_sku', 'item_name', 'item_configuration', 'item_price', 'sum','payment');
    
     foreach ($arrKeys as $v) {
       $this->arrHeaderFields[$v] = $csvHead[$v];
     } 
    
-    $objOrders = \Database::getInstance()->query("SELECT *, tl_iso_product_collection.id as collection_id FROM tl_iso_product_collection, tl_iso_address WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( document_number != '' OR document_number IS NOT NULL) ORDER BY document_number ASC");
+    $objOrders = \Database::getInstance()->query(
+	    "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
+FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
+WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( document_number != '' OR document_number IS NOT NULL) ORDER BY document_number ASC"
+    );
 
     if (null === $objOrders) {
       return '<div id="tl_buttons">
@@ -247,6 +259,7 @@ class IsotopeOrderExport extends \Backend
           'item_configuration' => $item['configuration'],
           'item_price'         => $item['item_price'],
           'item_sum'           => $item['sum'],
+	'payment' => $objOrders->city
         );
       }         
     }
