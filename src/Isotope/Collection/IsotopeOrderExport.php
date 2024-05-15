@@ -112,10 +112,10 @@ class IsotopeOrderExport extends \Backend
     }
 
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
-    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'items', 'grandTotal','payment');
+    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'items', 'taxTotal', 'subTotal', 'grandTotal', 'payment');
      
-    foreach ($arrKeys as $v) {
-      $this->arrHeaderFields[$v] = $csvHead[$v];
+    foreach ($arrKeys as $key) {
+      $this->arrHeaderFields[$key] = (isset($csvHead[$key])) ? $csvHead[$key] : $key;
     }
    
     $objOrders = \Database::getInstance()->query(
@@ -170,7 +170,7 @@ ORDER BY document_number ASC"
         'subTotal'      => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->subTotal))),
         'taxTotal'      => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->tax_free_subtotal))),
         'grandTotal'    => strip_tags(html_entity_decode(Isotope::formatPriceWithCurrency($objOrders->total))),
-	'payment'        => $objOrders->payment
+	      'payment'       => $objOrders->payment
       );         
     }
     
@@ -190,10 +190,10 @@ ORDER BY document_number ASC"
     }
 
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
-    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'count', 'item_sku', 'item_name', 'item_configuration', 'item_price', 'sum','payment');
+    $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'count', 'item_sku', 'item_name', 'item_configuration', 'item_price', 'sum', 'payment');
    
-    foreach ($arrKeys as $v) {
-      $this->arrHeaderFields[$v] = $csvHead[$v];
+    foreach ($arrKeys as $key) {
+      $this->arrHeaderFields[$key] = (isset($csvHead[$key])) ? $csvHead[$key] : $key;
     } 
    
     $objOrders = \Database::getInstance()->query(
@@ -259,7 +259,7 @@ WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( doc
           'item_configuration' => $item['configuration'],
           'item_price'         => $item['item_price'],
           'item_sum'           => $item['sum'],
-	'payment' => $objOrders->city
+          'payment'            => $objOrders->payment
         );
       }         
     }
@@ -282,7 +282,7 @@ WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( doc
     $arrKeys = array('company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email');
      
     foreach ($arrKeys as $v) {
-      $this->arrHeaderFields[$v] = $csvHead[$v];
+      $this->arrHeaderFields[$key] = (isset($csvHead[$key])) ? $csvHead[$key] : $key;
     }
 
     $objOrders = \Database::getInstance()->query("SELECT tl_iso_address.* FROM tl_iso_product_collection, tl_iso_address WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( document_number != '' OR document_number IS NOT NULL) GROUP BY member");
