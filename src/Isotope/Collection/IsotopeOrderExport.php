@@ -111,6 +111,9 @@ class IsotopeOrderExport extends \Backend
       return '';
     }
 
+    // Orderstatus, welche Bestellungen sollen exportiert werden
+    $desiredStatus = '6'; // Setzen Sie den gewünschten Status hier 6 = abgeschlossen
+
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
     $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'items', 'taxTotal', 'subTotal', 'grandTotal', 'payment');
      
@@ -119,21 +122,22 @@ class IsotopeOrderExport extends \Backend
     }
    
     $objOrders = \Database::getInstance()->query(
-	    "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
-FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
-WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id 
-AND tl_iso_product_collection.payment_id = tl_iso_payment.id
-AND ( document_number != '' OR document_number IS NOT NULL) 
-ORDER BY document_number ASC"
+      "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
+      FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
+      WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id 
+      AND tl_iso_product_collection.payment_id = tl_iso_payment.id
+      AND (document_number != '' OR document_number IS NOT NULL)
+      AND tl_iso_product_collection.order_status = '$desiredStatus' 
+      ORDER BY document_number ASC"
     );
-
+  
     if (null === $objOrders) {
-       return '<div id="tl_buttons">
+      return '<div id="tl_buttons">
           <a href="'.ampersand(str_replace('&key=export_order', '', $this->Environment->request)).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBT']).'">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
           </div>
           <p class="tl_gerror">'. $GLOBALS['TL_LANG']['MSC']['noOrders'] .'</p>';
     } 
-
+  
     $objOrderItems = \Database::getInstance()->query("SELECT * FROM tl_iso_product_collection_item");
     
     $arrOrderItems = array();
@@ -189,6 +193,10 @@ ORDER BY document_number ASC"
       return '';
     }
 
+    // Orderstatus, welche Bestellungen sollen exportiert werden
+    $desiredStatus = '6'; // Setzen Sie den gewünschten Status hier 6 = abgeschlossen
+
+
     $csvHead = &$GLOBALS['TL_LANG']['tl_iso_product_collection']['csv_head'];
     $arrKeys = array('order_id', 'date', 'company', 'lastname', 'firstname', 'street', 'postal', 'city', 'country', 'phone', 'email', 'count', 'item_sku', 'item_name', 'item_configuration', 'item_price', 'sum', 'payment');
    
@@ -197,11 +205,15 @@ ORDER BY document_number ASC"
     } 
    
     $objOrders = \Database::getInstance()->query(
-	    "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
-FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
-WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id AND ( document_number != '' OR document_number IS NOT NULL) ORDER BY document_number ASC"
+      "SELECT *, tl_iso_product_collection.id as collection_id, tl_iso_payment.name as payment
+      FROM tl_iso_product_collection, tl_iso_address, tl_iso_payment
+      WHERE tl_iso_product_collection.billing_address_id = tl_iso_address.id 
+      AND tl_iso_product_collection.payment_id = tl_iso_payment.id
+      AND (document_number != '' OR document_number IS NOT NULL)
+      AND tl_iso_product_collection.order_status = '$desiredStatus' 
+      ORDER BY document_number ASC"
     );
-
+  
     if (null === $objOrders) {
       return '<div id="tl_buttons">
           <a href="'.ampersand(str_replace('&key=export_order', '', $this->Environment->request)).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBT']).'">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
